@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-TwitterWorkerService-6561467E-0F90-455A-B462-4C8B46E9CE59</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="Stenn.EntityFrameworkCore.InMemory.Extensions.DependencyInjection" Version="6.4.38" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TwitterWorker.Infrastructure\TwitterWorker.Infrastructure.csproj" />
+    <ProjectReference Include="..\TwitterWorker.Services\TwitterWorker.Services.csproj" />
+  </ItemGroup>
+</Project>
