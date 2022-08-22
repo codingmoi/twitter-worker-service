@@ -27,10 +27,7 @@ namespace TwitterWorker.UnitTests
         public void TearDown()
         {
             var context = _serviceProvider.GetRequiredService<TweetsContext>();
-            context.Hashtags.ForEachAsync(hashtag =>
-            {
-                context.Remove(hashtag);
-            });
+            context.Hashtags.ForEachAsync(hashtag => context.Remove(hashtag));
             context.SaveChanges();
         }
 
@@ -45,7 +42,7 @@ namespace TwitterWorker.UnitTests
         }
 
         [Test]
-        public void GetTopTenHashtagsAsync_OneTopHashtag_OneGroupRepeats()
+        public void GetTopTenHashtagsAsync_TopOneHashtag_OneGroupRepeats()
         {                        
             var context = _serviceProvider.GetRequiredService<TweetsContext>();
 
@@ -65,7 +62,7 @@ namespace TwitterWorker.UnitTests
         }
 
         [Test]
-        public void GetTopTenHashtagsAsync_TwoTopHashtags_TwoGroupRepeats()
+        public void GetTopTenHashtagsAsync_TopTwoHashtags_TwoGroupsRepeat()
         {
             var context = _serviceProvider.GetRequiredService<TweetsContext>();
 
@@ -87,6 +84,41 @@ namespace TwitterWorker.UnitTests
             Assert.That(response.ElementAt(0).Count, Is.EqualTo(3));
             Assert.That(response.ElementAt(1).Tag, Is.EqualTo("tag1"));
             Assert.That(response.ElementAt(1).Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void GetTopTenHashtagsAsync_TopTenHashtags_TwelveGroupsRepeat()
+        {
+            var context = _serviceProvider.GetRequiredService<TweetsContext>();
+
+            var repeatTag = new int[] { 15, 5, 2, 13, 17, 10, 6, 9, 19, 7, 8, 4 };
+            var id = 1;
+
+            for (int i = 0; i < 12; i++)
+            {
+                for (int j = 0; j < repeatTag[i] - 1; j++)
+                {
+                    context.Add(new Hashtag { Id = id++, Tag = $"tag{i}" });
+                }
+            }
+
+            context.SaveChanges();
+
+            var hashtagRepository = new HashtagRepository(_serviceProvider);
+
+            var response = hashtagRepository.GetTopTenHashtagsAsync().Result;
+
+            Assert.That(response.Count(), Is.EqualTo(10));
+            Assert.That(response.ElementAt(0).Tag, Is.EqualTo("tag8"));
+            Assert.That(response.ElementAt(1).Tag, Is.EqualTo("tag4"));
+            Assert.That(response.ElementAt(2).Tag, Is.EqualTo("tag0"));
+            Assert.That(response.ElementAt(3).Tag, Is.EqualTo("tag3"));
+            Assert.That(response.ElementAt(4).Tag, Is.EqualTo("tag5"));
+            Assert.That(response.ElementAt(5).Tag, Is.EqualTo("tag7"));
+            Assert.That(response.ElementAt(6).Tag, Is.EqualTo("tag10"));
+            Assert.That(response.ElementAt(7).Tag, Is.EqualTo("tag9"));
+            Assert.That(response.ElementAt(8).Tag, Is.EqualTo("tag6"));
+            Assert.That(response.ElementAt(9).Tag, Is.EqualTo("tag1"));
         }
     }
 }
